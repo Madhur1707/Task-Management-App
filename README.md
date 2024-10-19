@@ -29,19 +29,19 @@
 
 ## Follow these instructions to set up the project on your local machine.
 
-# Installation
+## Installation
 * Clone the Repository:
 
 git clone https://github.com/Madhur1707/Task-Management-App.git
 
 cd task-management-app
 
-# Install Dependencies:
+## Install Dependencies:
 
 * Using npm:
 npm install
 
-# Running the App
+## Running the App
 * Start the Development Server:
 
 npm run dev
