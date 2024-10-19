@@ -1,95 +1,146 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
 
-export default function Home() {
+export default function Home({ initialTasks = [] }) {
+  const [tasks, setTasks] = useState(initialTasks);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [priorityFilter, setPriorityFilter] = useState("all");
+
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) {
+      const parsedTasks = JSON.parse(storedTasks);
+      if (Array.isArray(parsedTasks)) {
+        setTasks(parsedTasks);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+  }, [tasks]);
+
+  const addTask = (newTask) => {
+    if (editTaskId !== null) {
+      const updatedTasks = tasks.map((task) =>
+        task.id === editTaskId
+          ? { ...newTask, completed: task.completed, id: task.id }
+          : task
+      );
+      setTasks(updatedTasks);
+      setEditTaskId(null);
+    } else {
+      const updatedTasks = [
+        ...tasks,
+        { ...newTask, completed: false, id: Date.now() },
+      ];
+      setTasks(updatedTasks);
+    }
+  };
+
+  const startEditTask = (id) => {
+    setEditTaskId(id);
+  };
+
+  const deleteTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  const toggleComplete = (id) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
+  };
+
+  const filteredTasks = (tasks || [])
+    .filter((task) => {
+      const matchesSearch =
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPriority =
+        priorityFilter === "all" || task.priority === priorityFilter;
+      return matchesSearch && matchesPriority;
+    })
+    .sort((a, b) => {
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      if (a.completed !== b.completed) {
+        return a.completed - b.completed;
+      }
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="p-8">
+      <div className="flex mb-4 gap-5 w-full">
+        <h1 className="text-violet-500 text-2xl font-bold mb-3">
+          Task Management App
+        </h1>
+        <h3 className="text-violet-500 text-2xl font-bold mb-3 ml-auto hidden md:block">
+          Stay Lit 🔥 Stay Organized! 💻
+        </h3>
+      </div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+      <div className="flex mb-4 gap-5">
+        <Input
+          placeholder="Type for search tasks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full h-12"
+        />
+
+        <Select
+          value={priorityFilter}
+          onValueChange={(value) => setPriorityFilter(value)}
+          className="w-full"
+        >
+          <SelectTrigger className="h-12">
+            <span>
+              {priorityFilter.charAt(0).toUpperCase() + priorityFilter.slice(1)}
+            </span>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-1/3">
+          <TaskForm
+            addTask={addTask}
+            editTask={
+              editTaskId !== null
+                ? tasks.find((task) => task.id === editTaskId)
+                : null
+            }
+          />
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="w-full md:w-2/3">
+          <TaskList
+            tasks={filteredTasks}
+            toggleComplete={toggleComplete}
+            deleteTask={deleteTask}
+            startEditTask={startEditTask}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
     </div>
   );
 }
