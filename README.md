@@ -1,6 +1,8 @@
-### Task Management App
+# Task Management App
 
-##  A simple and efficient task management application built using React and Next.js. The app allows users to add, edit, delete, mark tasks as completed, and sort them based on priority, ensuring better organization and productivity. The app is styled with basic HTML/CSS and is responsive to different screen sizes. 
+* A simple and efficient task management application built using React and Next.js. The app allows users to add, edit, delete, mark tasks as completed, and sort them based on priority, ensuring better organization and productivity. The app is styled with basic HTML/CSS and is responsive to different screen sizes. 
+
+* Live Demo :-  https://task-manager-appj.vercel.app/
 
 ## Features: 
 
@@ -14,8 +16,8 @@
 
 ## Bonus Features: 
 
-# Local Storage Integration: Persist tasks between page reloads.
-# Search Functionality: Filter tasks by title or description using a search bar.
+* Local Storage Integration: Persist tasks between page reloads.
+* Search Functionality: Filter tasks by title or description using a search bar.
 
 ## Approach to Sorting Tasks by Priority
 
@@ -29,22 +31,23 @@
 
 ## Follow these instructions to set up the project on your local machine.
 
-# Installation
+## Installation
 * Clone the Repository:
 
 git clone https://github.com/Madhur1707/Task-Management-App.git
 
 cd task-management-app
 
-# Install Dependencies:
+## Install Dependencies:
 
 * Using npm:
 npm install
 
-# Running the App
+## Running the App
 * Start the Development Server:
 
 npm run dev
 
 Open your browser and navigate to:
 http://localhost:3000
+
