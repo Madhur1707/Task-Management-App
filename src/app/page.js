@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
+import { toast } from "sonner";
 
 export default function Home({ initialTasks = [] }) {
   const [tasks, setTasks] = useState(initialTasks);
@@ -41,21 +42,23 @@ export default function Home({ initialTasks = [] }) {
       );
       setTasks(updatedTasks);
       setEditTaskId(null);
+      toast.success("Task updated successfully!");
     } else {
       const updatedTasks = [
         ...tasks,
         { ...newTask, completed: false, id: Date.now() },
       ];
       setTasks(updatedTasks);
+      toast.success("Task added successfully!");
     }
   };
-
   const startEditTask = (id) => {
     setEditTaskId(id);
   };
 
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
+    toast.success("Task deleted successfully!");
   };
 
   const toggleComplete = (id) => {
@@ -63,6 +66,7 @@ export default function Home({ initialTasks = [] }) {
       task.id === id ? { ...task, completed: !task.completed } : task
     );
     setTasks(updatedTasks);
+    toast.success("Task status updated!");
   };
 
   const filteredTasks = (tasks || [])

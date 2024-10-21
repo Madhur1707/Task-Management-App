@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
@@ -6,7 +7,9 @@ export default function RootLayout({ children }) {
       <head>
         <title>Task Management App</title>
       </head>
-      <body>{children}</body>
+      <body>{children}
+      <Toaster position="top-right" richColors />
+      </body>
     </html>
   );
 }
